@@ -195,9 +195,9 @@ EFI_STATUS efi_main (EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 		newbuffer->pixelsperscanline);
 	//
 	EFI_MEMORY_DESCRIPTOR* Map = NULL;
-	UINTN MapSize, MapKey;
-	UINTN DescriptorSize;
-	UINT32 DescriptorVersion;
+	UINTN MapSize = 0, MapKey = 0;
+	UINTN DescriptorSize = 0;
+	UINT32 DescriptorVersion = 0;
 
 	SystemTable->BootServices->GetMemoryMap(&MapSize, Map, &MapKey, &DescriptorSize, &DescriptorVersion);
 	SystemTable->BootServices->AllocatePool(EfiLoaderData, MapSize, (void**)&Map);
