@@ -55,12 +55,13 @@ void PageFrameAllocator::freePage(void* address){
     freeMemory += 4096;
     usedMemory -= 4096;
 }
-void PageFrameAllocator::lockPage(void* address){
+void* PageFrameAllocator::lockPage(void* address){
     uint64_t index = (uint64_t)address / 4096;
-    if (PageBitmap[index] == true) return;
+    if (PageBitmap[index] == true) return NULL;
     PageBitmap.Set(index, true);
     freeMemory -= 4096;
     usedMemory += 4096;
+    return address;
 }
 void PageFrameAllocator::reservePage(void* address){
     uint64_t index = (uint64_t)address / 4096;
@@ -80,8 +81,7 @@ uint64_t inc = 0;
 void* PageFrameAllocator::requestpage(){
     for (uint64_t index = 0; index < PageBitmap.Size * 8; index++){
         if (PageBitmap[index] == true) continue;
-        lockPage((void*)(index * 4096));
-        return (void*)(index * 4096);
+        return lockPage((void*)(index * 4096));;
     }
 
     return NULL; // Page Frame Swap to file
