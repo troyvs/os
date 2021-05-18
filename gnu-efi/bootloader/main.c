@@ -225,13 +225,13 @@ EFI_STATUS efi_main (EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 
 	
 	int (*kernelStart)(bootInfo*) = ((__attribute__((sysv_abi)) int (*)(bootInfo*)) header.e_entry);
-	uint64_t mMapEntries = MapSize / DescriptorSize;
-	uint64_t memorySizeBytes = 0;
-	for (uint64_t i = 0; i < mMapEntries; i++){
-        EFI_MEMORY_DESCRIPTOR* desc = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)Map + (i * DescriptorSize));
-        memorySizeBytes += desc->NumberOfPages*4096;
-	}
-	Print(L"mmmmm:%d\n\r", memorySizeBytes);
+	// uint64_t mMapEntries = MapSize / DescriptorSize;
+	// uint64_t memorySizeBytes = 0;
+	// for (uint64_t i = 0; i < mMapEntries; i++){
+    //     EFI_MEMORY_DESCRIPTOR* desc = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)Map + (i * DescriptorSize));
+    //     memorySizeBytes += desc->NumberOfPages*4096;
+	// }
+	// Print(L"mmmmm:%d\n\r", memorySizeBytes);
 	bootInfo bootinfo;
 	bootinfo.framebuffer = newbuffer;
 	bootinfo.psf1_Font = newFont;
@@ -239,8 +239,8 @@ EFI_STATUS efi_main (EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 	bootinfo.mMapSize = MapSize;
 	bootinfo.mMapDescriptorSize = DescriptorSize;
 
-	//SystemTable->BootServices->ExitBootServices(ImageHandle,mapkey);
+	SystemTable->BootServices->ExitBootServices(ImageHandle,MapKey);
 
-	Print(L"%d\n\r",kernelStart(&bootinfo));
+	kernelStart(&bootinfo);
 	return EFI_SUCCESS; // Exit the UEFI application
 }

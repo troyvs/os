@@ -14,7 +14,7 @@ struct bootInfo{
 extern "C" int main(bootInfo* bootinfo){
 	BasicRenderer newRenderer = BasicRenderer(bootinfo->framebuffer,bootinfo->psf1_Font,0xffffff,15,50);
 
-	uint64_t mMapEntries = bootinfo->mMapSize + bootinfo->mMapDescriptorSize;
+	uint64_t mMapEntries = bootinfo->mMapSize / bootinfo->mMapDescriptorSize;
 
 	// for(int i =0;i < mMapEntries; i++){
 	//	EFI_MEMORY_DESCRIPTOR* desc = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)bootinfo->mMap + (i * bootinfo->mMapDescriptorSize));
@@ -27,7 +27,4 @@ extern "C" int main(bootInfo* bootinfo){
 	// }
 	uint64_t result = GetMemorySize(bootinfo->mMap,mMapEntries,bootinfo->mMapDescriptorSize);
 	newRenderer.println(to_string(result));
-	newRenderer.println(to_hstring((uint32_t)bootinfo->mMap->type));
-
-	return 123;
 }
