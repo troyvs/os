@@ -195,7 +195,8 @@ EFI_STATUS efi_main (EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 		newbuffer->pixelsperscanline);
 	//
 	EFI_MEMORY_DESCRIPTOR* Map = NULL;
-	UINTN MapSize = 0, MapKey = 0;
+	UINTN MapSize = 0;
+	UINTN MapKey = 0;
 	UINTN DescriptorSize = 0;
 	UINT32 DescriptorVersion = 0;
 
@@ -224,7 +225,7 @@ EFI_STATUS efi_main (EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 
 	
 	int (*kernelStart)(bootInfo*) = ((__attribute__((sysv_abi)) int (*)(bootInfo*)) header.e_entry);
-	uint64_t mMapEntries = MapSize + DescriptorSize;
+	uint64_t mMapEntries = MapSize / DescriptorSize;
 	uint64_t memorySizeBytes = 0;
 	for (uint64_t i = 0; i < mMapEntries; i++){
         EFI_MEMORY_DESCRIPTOR* desc = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)Map + (i * DescriptorSize));
