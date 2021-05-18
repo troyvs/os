@@ -198,13 +198,29 @@ EFI_STATUS efi_main (EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 	UINTN MapSize, MapKey;
 	UINTN DescriptorSize;
 	UINT32 DescriptorVersion;
-	{
-		
-		SystemTable->BootServices->GetMemoryMap(&MapSize, Map, &MapKey, &DescriptorSize, &DescriptorVersion);
-		SystemTable->BootServices->AllocatePool(EfiLoaderData, MapSize, (void**)&Map);
-		SystemTable->BootServices->GetMemoryMap(&MapSize, Map, &MapKey, &DescriptorSize, &DescriptorVersion);
 
+	SystemTable->BootServices->GetMemoryMap(&MapSize, Map, &MapKey, &DescriptorSize, &DescriptorVersion);
+	SystemTable->BootServices->AllocatePool(EfiLoaderData, MapSize, (void**)&Map);
+	EFI_STATUS mapStatus = SystemTable->BootServices->GetMemoryMap(&MapSize, Map, &MapKey, &DescriptorSize, &DescriptorVersion);
+
+	int attempts = 0;
+	while(mapStatus != EFI_SUCCESS) {
+		if(attempts++ == 10) {
+			Print(L"Failed to determine memory map size, giving up on OS load...");
+			return EFI_OUT_OF_RESOURCES;
+		}
+
+		// The allocation a couple lines up might have changed the memory map so that it is bigger than what we originally
+		// got as the result.  This simple method will increase in increments of descriptorSize until it is big enough
+		// or until we start getting silly
+		Print(L"%d\n\r",attempts);
+		SystemTable->BootServices->FreePool(Map);
+		MapSize += DescriptorSize;
+		SystemTable->BootServices->AllocatePool(EfiLoaderData, MapSize, (void **)&Map);
+		mapStatus = SystemTable->BootServices->GetMemoryMap(&MapSize, Map, &MapKey, &DescriptorSize, &DescriptorVersion);
 	}
+
+
 
 	
 	int (*kernelStart)(bootInfo*) = ((__attribute__((sysv_abi)) int (*)(bootInfo*)) header.e_entry);
