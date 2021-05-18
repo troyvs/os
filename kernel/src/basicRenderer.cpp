@@ -39,6 +39,9 @@ void BasicRenderer::println(const char* str){
 	}
     _CursorPos = {_xstart,_CursorPos.y+16};
 }
+void BasicRenderer::inc(){
+    _CursorPos = {_xstart,_CursorPos.y+16};
+}
 BasicRenderer::BasicRenderer(FrameBuffer* framebuffer, PSF1_FONT* font){
     _targetframebuffer = framebuffer;
     _font = font;

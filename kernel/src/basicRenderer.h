@@ -9,6 +9,7 @@ class BasicRenderer{
         BasicRenderer(FrameBuffer* framebuffer, PSF1_FONT* font, unsigned int color);
         BasicRenderer(FrameBuffer* framebuffer, PSF1_FONT* font, unsigned int startx, unsigned int starty);
         BasicRenderer(FrameBuffer* framebuffer, PSF1_FONT* font, unsigned int color, unsigned int startx, unsigned int starty);
+        void inc();
         void print(const char* str);
         void setcolor(unsigned int color);
         void println(const char* str);

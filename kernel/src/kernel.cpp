@@ -2,6 +2,8 @@
 #include "cstr.h"
 #include "efiMemory.h"
 #include "memory.h"
+#include "Bitmap.h"
+#include "PageFrameAllocator.h"
 
 struct bootInfo{
 	FrameBuffer* framebuffer;
@@ -10,21 +12,23 @@ struct bootInfo{
 	uint64_t mMapSize;
 	uint64_t mMapDescriptorSize;
 };
-
+uint8_t testbuffer[20];
 extern "C" int main(bootInfo* bootinfo){
-	BasicRenderer newRenderer = BasicRenderer(bootinfo->framebuffer,bootinfo->psf1_Font,0xffffff,15,50);
+	BasicRenderer Renderer = BasicRenderer(bootinfo->framebuffer,bootinfo->psf1_Font,0xffffff,15,50);
+	PageFrameAllocator Allocator;
+
+	Allocator.ReadEFIMemoryMap(bootinfo->mMap, bootinfo->mMapSize, bootinfo->mMapDescriptorSize);
 
 	uint64_t mMapEntries = bootinfo->mMapSize / bootinfo->mMapDescriptorSize;
 
-	// for(int i =0;i < mMapEntries; i++){
-	//	EFI_MEMORY_DESCRIPTOR* desc = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)bootinfo->mMap + (i * bootinfo->mMapDescriptorSize));
-	// 	newRenderer.print(EFI_MEMORY_TYPE_STRINGS[desc->type]);
-	// 	newRenderer.setcolor(0xffff00ff);
-	// 	newRenderer.print(": ");
-	// 	newRenderer.print(to_string(desc->numPages * 4096 /1024));
-	// 	newRenderer.println(" kb");
-	// 	newRenderer.setcolor(0xffffffff);
-	// }
-	uint64_t result = GetMemorySize(bootinfo->mMap,mMapEntries,bootinfo->mMapDescriptorSize);
-	newRenderer.println(to_string(result));
+	Renderer.print("free memory: "); Renderer.print(to_string(Allocator.getFreeMemory() / 1024)); Renderer.println(" Kb");
+	Renderer.print("used memory: "); Renderer.print(to_string(Allocator.getUsedMemory() / 1024)); Renderer.println(" Kb");
+	Renderer.print("reserved memory: "); Renderer.print(to_string(Allocator.getReservedMemory() / 1024)); Renderer.println(" Kb");
+	for(int i = 0; i < 20; i++){
+		void* address = Allocator.requestpage();
+		Renderer.print("free memory: "); Renderer.print(to_string(Allocator.getFreeMemory() / 1024)); Renderer.println(" Kb");
+	    Renderer.print("used memory: "); Renderer.print(to_string(Allocator.getUsedMemory() / 1024)); Renderer.println(" Kb");
+		Renderer.println(to_hstring((uint64_t)address));
+		Renderer.println(to_string((uint64_t)address));
+	}
 }
