@@ -2,10 +2,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-class bitmap{
+class Bitmap{
     public:
     size_t Size;
     uint8_t* Buffer;
     bool operator[](uint64_t index);
-    bool Set(uint64_t index, bool value);
+    void Set(uint64_t index, bool value);
 };

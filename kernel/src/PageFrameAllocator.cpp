@@ -7,35 +7,37 @@ bool Initialized = false;
 
 void PageFrameAllocator::ReadEFIMemoryMap(EFI_MEMORY_DESCRIPTOR* mMap, size_t mMapSize, size_t mMapDescSize){
     if (Initialized) return;
-    
+
     Initialized = true;
 
-    void*  largestFreeMemSeg = NULL;
+    uint64_t mMapEntries = mMapSize / mMapDescSize;
+
+    void* largestFreeMemSeg = NULL;
     size_t largestFreeMemSegSize = 0;
 
-    uint64_t mMapEntries = mMapSize / mMapDescSize;
-    for(int i =0; i < mMapEntries; i++){
+    for (int i = 0; i < mMapEntries; i++){
         EFI_MEMORY_DESCRIPTOR* desc = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)mMap + (i * mMapDescSize));
-        if (desc->type == 7){
-            if(desc->numPages * 4096 > largestFreeMemSegSize){
+        if (desc->type == 7){ // type = EfiConventionalMemory
+            if (desc->numPages * 4096 > largestFreeMemSegSize)
+            {
                 largestFreeMemSeg = desc->physAddr;
                 largestFreeMemSegSize = desc->numPages * 4096;
             }
         }
     }
-    
-    uint64_t memorySize = GetMemorySize(mMap,mMapEntries,mMapDescSize);
+
+    uint64_t memorySize = GetMemorySize(mMap, mMapEntries, mMapDescSize);
     freeMemory = memorySize;
     uint64_t bitmapSize = memorySize / 4096 / 8 + 1;
-    
-    InitBitmap(bitmapSize,largestFreeMemSeg);
 
-    lockPages(&PageBitmap.Buffer, PageBitmap.Size / 4096 +1);
+    InitBitmap(bitmapSize, largestFreeMemSeg);
 
-    for(int i =0; i < mMapEntries; i++){
+    lockPages(&PageBitmap, PageBitmap.Size / 4096 + 1);
+
+    for (int i = 0; i < mMapEntries; i++){
         EFI_MEMORY_DESCRIPTOR* desc = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)mMap + (i * mMapDescSize));
-        if(desc->type != 7){
-            reservePages(desc->physAddr,desc->numPages);
+        if (desc->type != 7){ // not efiConventionalMemory
+            reservePages(desc->physAddr, desc->numPages);
         }
     }
 
@@ -55,13 +57,12 @@ void PageFrameAllocator::freePage(void* address){
     freeMemory += 4096;
     usedMemory -= 4096;
 }
-void* PageFrameAllocator::lockPage(void* address){
+void PageFrameAllocator::lockPage(void* address){
     uint64_t index = (uint64_t)address / 4096;
-    if (PageBitmap[index] == true) return NULL;
+    if (PageBitmap[index] == true) return;
     PageBitmap.Set(index, true);
     freeMemory -= 4096;
     usedMemory += 4096;
-    return address;
 }
 void PageFrameAllocator::reservePage(void* address){
     uint64_t index = (uint64_t)address / 4096;
@@ -81,7 +82,8 @@ uint64_t inc = 0;
 void* PageFrameAllocator::requestpage(){
     for (uint64_t index = 0; index < PageBitmap.Size * 8; index++){
         if (PageBitmap[index] == true) continue;
-        return lockPage((void*)(index * 4096));;
+        lockPage((void*)(index * 4096));
+        return (void*)(index * 4096);
     }
 
     return NULL; // Page Frame Swap to file

@@ -12,10 +12,17 @@ struct bootInfo{
 	uint64_t mMapSize;
 	uint64_t mMapDescriptorSize;
 };
-uint8_t testbuffer[20];
+
+extern uint64_t _KernelStart;
+extern uint64_t _KernelEnd;
+
 extern "C" int main(bootInfo* bootinfo){
 	BasicRenderer Renderer = BasicRenderer(bootinfo->framebuffer,bootinfo->psf1_Font,0xffffff,15,50);
 	PageFrameAllocator Allocator;
+
+	uint64_t kernelSize = (uint64_t)&_KernelEnd - (uint64_t)&_KernelStart;
+	uint64_t kernelPages = (uint64_t) kernelSize / 4096 + 1;
+	Allocator.lockPages(&_KernelStart, kernelPages);
 
 	Allocator.ReadEFIMemoryMap(bootinfo->mMap, bootinfo->mMapSize, bootinfo->mMapDescriptorSize);
 
@@ -26,9 +33,10 @@ extern "C" int main(bootInfo* bootinfo){
 	Renderer.print("reserved memory: "); Renderer.print(to_string(Allocator.getReservedMemory() / 1024)); Renderer.println(" Kb");
 	for(int i = 0; i < 20; i++){
 		void* address = Allocator.requestpage();
-		Renderer.print("free memory: "); Renderer.print(to_string(Allocator.getFreeMemory() / 1024)); Renderer.println(" Kb");
-	    Renderer.print("used memory: "); Renderer.print(to_string(Allocator.getUsedMemory() / 1024)); Renderer.println(" Kb");
 		Renderer.println(to_hstring((uint64_t)address));
-		Renderer.println(to_string((uint64_t)address));
 	}
+
+// 	for(uint64_t index=0; index < 1000;index++){
+// 		Renderer.println(to_string(index));
+// 	}
 }

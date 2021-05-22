@@ -1,5 +1,5 @@
-#include <efi.h>
-#include <efilib.h>
+#include <efi/efi.h>
+#include <efi/efilib.h>
 #include <elf.h>
 
 typedef unsigned long long size_t;

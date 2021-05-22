@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "gnu-efi/bootloader",
+			"name": "bootloader src"
+		},
+		{
+			"path": "kernel/src",
+			"name": "kernel src"
+		}
+	],
+	"settings": {
+		"terminal.integrated.cwd": "../../",
+		"files.exclude": {
+		    ".dccache": true
+		},
+		"makefile.makeDirectory": "../../",
+		"C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
+		"makefile.extensionOutputFolder": "./.vscode",
+		
+	}
+}

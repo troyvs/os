@@ -8,9 +8,9 @@
 class PageFrameAllocator{
     public:
     void ReadEFIMemoryMap(EFI_MEMORY_DESCRIPTOR* mMap, size_t mMapSize, size_t mMapdescSize);
-    bitmap PageBitmap;
+    Bitmap PageBitmap;
     void freePage(void* address);
-    void* lockPage(void* address);
+    void lockPage(void* address);
     void freePages(void* address, uint64_t pageCount);
     void lockPages(void* address, uint64_t pageCount);
     void* requestpage();

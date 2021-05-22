@@ -23,8 +23,6 @@
     "kernel/*.git.*": true,
     "kernel/*bin": true,
     "kernel/*bin.*": true,
-    "kernel/*kernel": true,
-    "kernel/*kernel.*": true,
     "kernel/*lib": true,
     "kernel/*lib.*": true,
     "kernel/*run": true,
@@ -34,6 +32,7 @@
     "kernel/*src.*": true,
     "kernel/*startup": true,
     "kernel/*startup.*": true,
-    "OVMFbin": false
+    "OVMFbin": true,
+
   }
 }
