@@ -1,27 +1,30 @@
 #pragma once
 #include "../efiMemory.h"
-#include "../Bitmap.h"
 #include <stdint.h>
+#include "../Bitmap.h"
 #include "../memory.h"
-#include "../cstr.h"
 
-class PageFrameAllocator{
+class PageFrameAllocator {
     public:
-    void ReadEFIMemoryMap(EFI_MEMORY_DESCRIPTOR* mMap, size_t mMapSize, size_t mMapdescSize);
+    void ReadEFIMemoryMap(EFI_MEMORY_DESCRIPTOR* mMap, size_t mMapSize, size_t mMapDescSize);
     Bitmap PageBitmap;
-    void freePage(void* address);
-    void lockPage(void* address);
-    void freePages(void* address, uint64_t pageCount);
-    void lockPages(void* address, uint64_t pageCount);
-    void* requestpage();
-    uint64_t getFreeMemory();
-    uint64_t getUsedMemory();
-    uint64_t getReservedMemory();
+    void FreePage(void* address);
+    void FreePages(void* address, uint64_t pageCount);
+    void LockPage(void* address);
+    void LockPages(void* address, uint64_t pageCount);
+    void* RequestPage();
+    uint64_t GetFreeRAM();
+    uint64_t GetUsedRAM();
+    uint64_t GetReservedRAM();
+
 
     private:
     void InitBitmap(size_t bitmapSize, void* bufferAddress);
-    void reservePage(void* address);
-    void unreservePage(void* address);
-    void reservePages(void* address, uint64_t pageCount);
-    void unreservePages(void* address, uint64_t pageCount);
+    void ReservePage(void* address);
+    void ReservePages(void* address, uint64_t pageCount);
+    void UnreservePage(void* address);
+    void UnreservePages(void* address, uint64_t pageCount);
+
 };
+
+extern PageFrameAllocator globalAllocator;

@@ -17,6 +17,10 @@
 		"makefile.makeDirectory": "../../",
 		"C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
 		"makefile.extensionOutputFolder": "./.vscode",
+		"code-runner.cwd": "../../",
+		"make-runner.env": {
+		
+		},
 		
 	}
 }
