@@ -16,7 +16,7 @@ uint64_t GetMemorySize(EFI_MEMORY_DESCRIPTOR* mMap, uint64_t mMapEntries, uint64
 
 }
 void memset(void* start, uint8_t value, uint64_t num){
-    for (uint64_t i =0;i < num;i++){
-        *(uint8_t*)((uint64_t)start + 1) = value;
+    for (uint64_t i = 0; i < num; i++){
+        *(uint8_t*)((uint64_t)start + i) = value;
     }
 }

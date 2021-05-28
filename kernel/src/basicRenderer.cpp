@@ -1,6 +1,8 @@
 #include "basicRenderer.h"
 #include <stdint.h>
 
+BasicRenderer* globalrenderer;
+
 void BasicRenderer::drawchar(char chr,unsigned int xoff,unsigned int yoff){
     unsigned int* pixPtr = (unsigned int*)_targetframebuffer->baseAddress;
     char* fontPtr = (char*)_font->glyphBuffer + (chr * _font->header->charsize);
@@ -73,3 +75,19 @@ BasicRenderer::BasicRenderer(FrameBuffer* framebuffer, PSF1_FONT* font, unsigned
 void BasicRenderer::setcolor(unsigned int color){
     _color = color;
 }
+void BasicRenderer::resetpos(){
+    _CursorPos = {0,0};
+}
+void BasicRenderer::clear(uint32_t color){
+    uint64_t fbBase = (uint64_t)_targetframebuffer->baseAddress;
+    uint64_t bytesPerScanline = _targetframebuffer->pixelsperscanline * 4;
+    uint64_t fbHeight = _targetframebuffer->height;
+    uint64_t fbSize = _targetframebuffer->Size;
+
+    for(int vsl = 0; vsl < fbHeight;vsl++){
+        uint64_t pixPtrBase = fbBase + (bytesPerScanline * vsl);
+        for(uint32_t* pixPtr = (uint32_t*)pixPtrBase; pixPtr < (uint32_t*)(pixPtrBase +  bytesPerScanline); pixPtr++){
+            *pixPtr = color;
+        }
+    }
+}   
