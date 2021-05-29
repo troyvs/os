@@ -10,13 +10,17 @@ class BasicRenderer{
         BasicRenderer(FrameBuffer* framebuffer, PSF1_FONT* font, unsigned int color);
         BasicRenderer(FrameBuffer* framebuffer, PSF1_FONT* font, unsigned int startx, unsigned int starty);
         BasicRenderer(FrameBuffer* framebuffer, PSF1_FONT* font, unsigned int color, unsigned int startx, unsigned int starty);
+        BasicRenderer(FrameBuffer* framebuffer, PSF1_FONT* font, unsigned int color, unsigned int clearcolor, unsigned int startx, unsigned int starty);
         void inc();
         void print(const char* str);
         void setcolor(unsigned int color);
         void println(const char* str);
         void drawchar(char chr,unsigned int xoff,unsigned int yoff);
+        void drawchar(char chr);
         void resetpos();
-        void clear(uint32_t color);
+        void clear();
+        void clearchar();
+        void setClrcolor(unsigned int color);
 
     protected:
 
@@ -25,6 +29,7 @@ class BasicRenderer{
         PSF1_FONT* _font;
         point _CursorPos;
         unsigned int _color;
+        unsigned int _clearcolor;
         unsigned int _xstart;
 
 };

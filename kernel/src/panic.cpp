@@ -1,7 +1,8 @@
 #include "panic.h"
 
-void panic(const char* panicMessage){
-    globalrenderer->clear(0x00ff0000);
+void Panic(const char* panicMessage){
+    globalrenderer->setClrcolor(0x00ff0000);
+    globalrenderer->clear();
     globalrenderer->resetpos();
     globalrenderer->setcolor(0);
     globalrenderer->println("Kernel Panic");

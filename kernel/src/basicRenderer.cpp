@@ -72,13 +72,21 @@ BasicRenderer::BasicRenderer(FrameBuffer* framebuffer, PSF1_FONT* font, unsigned
     _CursorPos = {startx,starty};
     _xstart = startx;
 }
+BasicRenderer::BasicRenderer(FrameBuffer* framebuffer, PSF1_FONT* font, unsigned int color, unsigned int clearcolor, unsigned int startx, unsigned int starty){
+    _targetframebuffer = framebuffer;
+    _font = font;
+    _color = color;
+    _CursorPos = {startx,starty};
+    _xstart = startx;
+    _clearcolor = clearcolor;
+}
 void BasicRenderer::setcolor(unsigned int color){
     _color = color;
 }
 void BasicRenderer::resetpos(){
     _CursorPos = {0,0};
 }
-void BasicRenderer::clear(uint32_t color){
+void BasicRenderer::clear(){
     uint64_t fbBase = (uint64_t)_targetframebuffer->baseAddress;
     uint64_t bytesPerScanline = _targetframebuffer->pixelsperscanline * 4;
     uint64_t fbHeight = _targetframebuffer->height;
@@ -87,7 +95,43 @@ void BasicRenderer::clear(uint32_t color){
     for(int vsl = 0; vsl < fbHeight;vsl++){
         uint64_t pixPtrBase = fbBase + (bytesPerScanline * vsl);
         for(uint32_t* pixPtr = (uint32_t*)pixPtrBase; pixPtr < (uint32_t*)(pixPtrBase +  bytesPerScanline); pixPtr++){
-            *pixPtr = color;
+            *pixPtr = _clearcolor;
         }
     }
 }   
+void BasicRenderer::setClrcolor(unsigned int color){
+    _clearcolor = color;
+}
+void BasicRenderer::drawchar(char chr){
+    drawchar(chr,_CursorPos.x,_CursorPos.y);
+    _CursorPos.x += 8;
+    if(_CursorPos.x + 8 > _targetframebuffer->width){
+        _CursorPos.x = 0;
+        _CursorPos.y +=16;
+    }
+}
+void BasicRenderer::clearchar(){
+    if (_CursorPos.x == 0){
+        _CursorPos.x = _targetframebuffer->width;
+        _CursorPos.y -= 16;
+        if (_CursorPos.y < 0) _CursorPos.y = 0;
+    }
+
+    unsigned int xOff = _CursorPos.x;
+    unsigned int yOff = _CursorPos.y;
+
+    unsigned int* pixPtr = (unsigned int*)_targetframebuffer->baseAddress;
+    for (unsigned long y = yOff; y < yOff + 16; y++){
+        for (unsigned long x = xOff - 8; x < xOff; x++){
+                    *(unsigned int*)(pixPtr + x + (y * _targetframebuffer->pixelsperscanline)) = _clearcolor;
+        }
+    }
+
+    _CursorPos.x -= 8;
+
+    if (_CursorPos.x < 0){
+        _CursorPos.x = _targetframebuffer->width;
+        _CursorPos.y -= 16;
+        if (_CursorPos.y < 0) _CursorPos.y = 0;
+    }
+}

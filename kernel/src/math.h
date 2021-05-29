@@ -1,5 +1,5 @@
 #pragma once
 struct point{
-	unsigned int x;
-	unsigned int y;
+	long x;
+	long y;
 };
